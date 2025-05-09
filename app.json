@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "thrilled-green-scone",
+    "slug": "snack-b3bc3dc2-ec9d-46f1-90ae-fff39614afeb",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8ba6554d-f19f-4b96-a4e1-92fbbeee0f5e"
+      }
+    },
+    "owner": "aru1337"
+  }
+}
