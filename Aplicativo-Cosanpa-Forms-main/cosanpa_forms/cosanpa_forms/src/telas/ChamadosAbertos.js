@@ -1,4 +1,3 @@
-// src/telas/ChamadosAbertos.js
 import React, { useContext, useState, useEffect } from 'react';
 import {
   ScrollView,
@@ -22,15 +21,19 @@ export default function ChamadosAbertos() {
   const [kmFinal, setKmFinal] = useState('');
   const [fotoKmFinal, setFotoKmFinal] = useState(null);
   const [observacoes, setObservacoes] = useState('');
+  const [horarioFinal, setHorarioFinal] = useState('');
+  const [destinoFinal, setDestinoFinal] = useState('');
   const [valido, setValido] = useState(false);
 
   useEffect(() => {
     setValido(
       kmFinal.trim() !== '' &&
       fotoKmFinal !== null &&
-      observacoes.trim() !== ''
+      observacoes.trim() !== '' &&
+      horarioFinal.trim() !== '' &&
+      destinoFinal.trim() !== ''
     );
-  }, [kmFinal, fotoKmFinal, observacoes]);
+  }, [kmFinal, fotoKmFinal, observacoes, horarioFinal, destinoFinal]);
 
   const tirarFoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -56,14 +59,17 @@ export default function ChamadosAbertos() {
       kmFinal,
       fotoKmFinal,
       observacoes,
+      horarioFinal,
+      destinoFinal,
       finalizado: true,
     });
     Alert.alert('Sucesso', 'Chamado finalizado com sucesso!');
-    // limpa estado
     setSelecionado(null);
     setKmFinal('');
     setFotoKmFinal(null);
     setObservacoes('');
+    setHorarioFinal('');
+    setDestinoFinal('');
   };
 
   return (
@@ -82,6 +88,8 @@ export default function ChamadosAbertos() {
             setKmFinal('');
             setFotoKmFinal(null);
             setObservacoes('');
+            setHorarioFinal('');
+            setDestinoFinal('');
           }}
           style={[
             styles.card,
@@ -89,15 +97,31 @@ export default function ChamadosAbertos() {
           ]}
         >
           <Text><Text style={styles.label}>Nome:</Text> {c.nome}</Text>
-          <Text><Text style={styles.label}>CPF:</Text> {c.cpf}</Text>
           <Text><Text style={styles.label}>Placa:</Text> {c.placa}</Text>
-          <Text><Text style={styles.label}>Marca:</Text> {c.marca}</Text>
           <Text><Text style={styles.label}>Modelo:</Text> {c.modelo}</Text>
         </TouchableOpacity>
       ))}
 
       {selecionado && (
         <View style={{ marginTop: 20 }}>
+          <Text style={styles.sectionTitle}>Encerramento da Viagem 🧳</Text>
+
+          <Text style={styles.label}>Horário Final</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Digite o horário final"
+            value={horarioFinal}
+            onChangeText={setHorarioFinal}
+          />
+
+          <Text style={styles.label}>Destino Final</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Digite o destino final"
+            value={destinoFinal}
+            onChangeText={setDestinoFinal}
+          />
+
           <Text style={styles.sectionTitle}>KM Final 🛣️</Text>
           <TextInput
             style={styles.input}

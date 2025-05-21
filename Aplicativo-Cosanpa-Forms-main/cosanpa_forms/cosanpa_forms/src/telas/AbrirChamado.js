@@ -18,11 +18,11 @@ export default function AbrirChamado({ navigation }) {
   const [tipoFrota, setTipoFrota] = useState('');
   const [kmInicial, setKmInicial] = useState('');
   const [fotoKmInicial, setFotoKmInicial] = useState(null);
+  const [horarioInicial, setHorarioInicial] = useState('');
+  const [destinoInicial, setDestinoInicial] = useState('');
   const [valido, setValido] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const tiposDeFrota = ['Locada', 'Própria'];
 
   useEffect(() => {
     setValido(
@@ -36,11 +36,14 @@ export default function AbrirChamado({ navigation }) {
       contrato &&
       tipoFrota &&
       kmInicial &&
-      fotoKmInicial
+      fotoKmInicial &&
+      horarioInicial &&
+      destinoInicial
     );
   }, [
     matricula, nome, vinculo, placa, tipoVeiculo, modelo,
-    fabricante, contrato, tipoFrota, kmInicial, fotoKmInicial
+    fabricante, contrato, tipoFrota, kmInicial, fotoKmInicial,
+    horarioInicial, destinoInicial
   ]);
 
   const tirarFoto = async () => {
@@ -72,47 +75,13 @@ export default function AbrirChamado({ navigation }) {
       tipoFrota,
       kmInicial,
       fotoKmInicial,
+      horarioInicial,
+      destinoInicial,
       finalizado: false,
     };
     adicionarChamado(chamado);
     navigation.navigate('Chamados Abertos');
   };
-
-  const buscarDadosVeiculo = async (placa) => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await fetch(`http://10.20.0.45:8080/motoristas/buscar?placa=${placa}`);
-      
-      if (!response.ok) {
-        throw new Error('Não foi possível buscar os dados do veículo.');
-      }
-
-      const data = await response.json();
-      console.log('Resposta da API:', data);
-
-      if (data) {
-        setModelo(data.modelo);
-        setFabricante(data.fabricante);
-        setTipoVeiculo(data.tipoVeiculo);
-        setContrato(data.contrato);
-      } else {
-        setError('Veículo não encontrado.');
-      }
-    } catch (error) {
-      console.error('Erro ao buscar dados do veículo:', error);
-      setError('Erro ao buscar dados.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ⬇️ Busca automática ao preencher placa
-  useEffect(() => {
-    if (placa.length >= 7) {
-      buscarDadosVeiculo(placa);
-    }
-  }, [placa]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -191,28 +160,34 @@ export default function AbrirChamado({ navigation }) {
           placeholder="Digite o contrato"
           onChangeText={setContrato}
         />
+      <Text style={styles.label}>Tipo de Frota </Text>
+        <TextInput
+          style={styles.input}
+          value={tipoFrota}
+          placeholder="Digite o tipo de frota"
+          onChangeText={setTipoFrota}
+        />
       </View>
 
-      {/* Tipo de Frota */}
+      {/* Horário e Destino */}
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Tipo de Frota 🛣️</Text>
-        <View style={styles.fuelContainer}>
-          {tiposDeFrota.map((tipo) => (
-            <TouchableOpacity
-              key={tipo}
-              onPress={() => setTipoFrota(tipo)}
-              style={{
-                backgroundColor: tipoFrota === tipo ? '#0249e3' : '#ccc',
-                paddingVertical: 10,
-                paddingHorizontal: 20,
-                borderRadius: 20,
-                margin: 5,
-              }}
-            >
-              <Text style={{ color: '#fff', fontWeight: 'bold' }}>{tipo}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <Text style={styles.sectionTitle}>Horário e Destino 🕒🚗</Text>
+
+        <Text style={styles.label}>Horário Inicial</Text>
+        <TextInput
+          style={styles.input}
+          value={horarioInicial}
+          placeholder="Digite o horário inicial"
+          onChangeText={setHorarioInicial}
+        />
+
+        <Text style={styles.label}>Destino Inicial</Text>
+        <TextInput
+          style={styles.input}
+          value={destinoInicial}
+          placeholder="Digite o destino inicial"
+          onChangeText={setDestinoInicial}
+        />
       </View>
 
       {/* Quilometragem */}
@@ -250,7 +225,7 @@ export default function AbrirChamado({ navigation }) {
       {/* Exibindo a mensagem de loading */}
       {loading && <Text>Carregando...</Text>}
 
-      {/* Exibindo erro, se houver */}
+      {/* Exibindo erro, se houver */}z
       {error ? <Text style={{ color: 'red' }}>{error}</Text> : null}
     </ScrollView>
   );

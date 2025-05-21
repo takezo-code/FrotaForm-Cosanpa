@@ -12,39 +12,56 @@ export default function Historico() {
   const exportarCSV = async () => {
     if (finalizados.length === 0) return alert('Sem chamados finalizados');
 
-    // Cabeçalhos para cada tabela de chamado
-    const header = 'Matrícula, Nome, Vínculo, Placa, Tipo de Veículo, Modelo, Fabricante, Contrato, Tipo de Frota, KM Inicial, Foto KM Inicial\n';
-    
-    // Organizando os dados em uma estrutura de "tabelas" separadas por chamados
+    const header = [
+      'Matrícula',
+      'Nome',
+      'Vínculo',
+      'Placa',
+      'Tipo de Veículo',
+      'Modelo',
+      'Fabricante',
+      'Contrato',
+      'Tipo de Frota',
+      'KM Inicial',
+      'KM Final',
+      'Observações',
+      'Horário Final',
+      'Destino Final',
+      'Foto KM Inicial',
+      'Foto KM Final'
+    ].join(',') + '\n';
+
     const rows = finalizados.map(c => {
-      return `
-      | Matrícula: ${c.matricula} |
-      |---------------------------|
-      | Nome: ${c.nome}           |
-      | Vínculo: ${c.vinculo}     |
-      | Placa: ${c.placa}         |
-      | Tipo de Veículo: ${c.tipoVeiculo} |
-      | Modelo: ${c.modelo}       |
-      | Fabricante: ${c.fabricante} |
-      | Contrato: ${c.contrato}   |
-      | Tipo de Frota: ${c.tipoFrota} |
-      | KM Inicial: ${c.kmInicial} |
-      | Foto KM Inicial: ${c.fotoKmInicial ? 'Foto disponível' : 'Sem foto'} |
-      ----------------------------\n`;
+      return [
+        c.matricula,
+        c.nome,
+        c.vinculo,
+        c.placa,
+        c.tipoVeiculo,
+        c.modelo,
+        c.fabricante,
+        c.contrato,
+        c.tipoFrota,
+        c.kmInicial,
+        c.kmFinal || '',
+        c.observacoes || '',
+        c.horarioFinal || '',
+        c.destinoFinal || '',
+        c.fotoKmInicial ? 'Foto disponível' : 'Sem foto',
+        c.fotoKmFinal ? 'Foto disponível' : 'Sem foto'
+      ].join(',');
     });
 
-    // Combinando cabeçalhos com as linhas em formato de tabela separada
     const csv = header + rows.join('\n');
-    
-    // Caminho para salvar o arquivo CSV
-    const path = FileSystem.documentDirectory + 'Formulário.csv';
 
-    // Escrevendo o arquivo CSV
-    await FileSystem.writeAsStringAsync(path, csv, {
+    // Adiciona BOM para Excel reconhecer UTF-8 corretamente
+    const csvComBOM = '\uFEFF' + csv;
+
+    const path = FileSystem.documentDirectory + 'Formulario.csv';
+    await FileSystem.writeAsStringAsync(path, csvComBOM, {
       encoding: FileSystem.EncodingType.UTF8,
     });
 
-    // Compartilhando o arquivo
     await Sharing.shareAsync(path);
   };
 
@@ -52,7 +69,6 @@ export default function Historico() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Histórico</Text>
 
-      {/* Exibição dos chamados finalizados */}
       {finalizados.map((c, i) => (
         <View key={i} style={styles.card}>
           <Text><Text style={styles.label}>Matrícula:</Text> {c.matricula}</Text>
@@ -65,18 +81,25 @@ export default function Historico() {
           <Text><Text style={styles.label}>Contrato:</Text> {c.contrato}</Text>
           <Text><Text style={styles.label}>Tipo de Frota:</Text> {c.tipoFrota}</Text>
           <Text><Text style={styles.label}>KM Inicial:</Text> {c.kmInicial}</Text>
+          <Text><Text style={styles.label}>KM Final:</Text> {c.kmFinal || '-'}</Text>
+          <Text><Text style={styles.label}>Horário Final:</Text> {c.horarioFinal || '-'}</Text>
+          <Text><Text style={styles.label}>Destino Final:</Text> {c.destinoFinal || '-'}</Text>
+          <Text><Text style={styles.label}>Observações:</Text> {c.observacoes || '-'}</Text>
           <Text><Text style={styles.label}>Foto KM Inicial:</Text> {c.fotoKmInicial ? 'Foto disponível' : 'Sem foto'}</Text>
+          <Text><Text style={styles.label}>Foto KM Final:</Text> {c.fotoKmFinal ? 'Foto disponível' : 'Sem foto'}</Text>
         </View>
       ))}
 
-      {/* Botão de exportação */}
-      <TouchableOpacity onPress={exportarCSV} style={{
-        marginTop: 20,
-        backgroundColor: '#0249e3',
-        padding: 15,
-        borderRadius: 8,
-        alignItems: 'center'
-      }}>
+      <TouchableOpacity
+        onPress={exportarCSV}
+        style={{
+          marginTop: 20,
+          backgroundColor: '#0249e3',
+          padding: 15,
+          borderRadius: 8,
+          alignItems: 'center'
+        }}
+      >
         <Text style={{ color: '#fff', fontWeight: 'bold' }}>Enviar ✅</Text>
       </TouchableOpacity>
     </ScrollView>
